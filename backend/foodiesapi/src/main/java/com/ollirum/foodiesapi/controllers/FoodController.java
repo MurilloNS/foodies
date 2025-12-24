@@ -41,4 +41,10 @@ public class FoodController {
         List<FoodResponseDTO> foods = foodService.findAllFoods();
         return ResponseEntity.ok(foods);
     }
+
+    @GetMapping("/{id}")
+    public ResponseEntity<FoodResponseDTO> findById(@PathVariable String id) {
+        FoodResponseDTO food = foodService.findById(id);
+        return ResponseEntity.ok(food);
+    }
 }

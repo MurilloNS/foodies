@@ -60,6 +60,14 @@ public class FoodServiceImpl implements FoodService {
         return foods.stream().map(FoodMapper::toResponseDTO).collect(Collectors.toList());
     }
 
+    @Override
+    public FoodResponseDTO findById(String id) {
+        Food food = foodRepository.findById(id).
+                orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND));
+
+        return FoodMapper.toResponseDTO(food);
+    }
+
     private String uploadFile(MultipartFile file) {
         String filenameExtension = Objects.requireNonNull(file.getOriginalFilename()).substring(file.getOriginalFilename().lastIndexOf(".") + 1);
         String key = UUID.randomUUID().toString() + "." + filenameExtension;

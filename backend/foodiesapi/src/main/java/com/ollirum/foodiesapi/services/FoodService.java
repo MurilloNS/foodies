@@ -9,4 +9,5 @@ import java.util.List;
 public interface FoodService {
     FoodResponseDTO addFood(FoodRequestDTO inputDTO, MultipartFile file);
     List<FoodResponseDTO> findAllFoods();
+    FoodResponseDTO findById(String id);
 }
