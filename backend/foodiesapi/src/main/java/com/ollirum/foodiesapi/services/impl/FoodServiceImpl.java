@@ -60,12 +60,30 @@ public class FoodServiceImpl implements FoodService {
         return foods.stream().map(FoodMapper::toResponseDTO).collect(Collectors.toList());
     }
 
+    @Transactional(readOnly = true)
     @Override
     public FoodResponseDTO findById(String id) {
         Food food = foodRepository.findById(id).
                 orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND));
 
         return FoodMapper.toResponseDTO(food);
+    }
+
+    @Transactional(rollbackFor = Exception.class)
+    @Override
+    public void deleteFood(String id) {
+        Food food = foodRepository.findById(id).
+                orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND));
+
+        String imageUrl = food.getImageUrl();
+        String s3Key = null;
+
+        if (imageUrl != null && !imageUrl.isBlank()) {
+            s3Key = imageUrl.substring(imageUrl.lastIndexOf("/") + 1);
+        }
+
+        deleteFile(s3Key);
+        foodRepository.deleteById(id);
     }
 
     private String uploadFile(MultipartFile file) {
