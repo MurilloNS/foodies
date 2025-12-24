@@ -20,8 +20,10 @@ import software.amazon.awssdk.services.s3.model.PutObjectRequest;
 import software.amazon.awssdk.services.s3.model.PutObjectResponse;
 
 import java.io.IOException;
+import java.util.List;
 import java.util.Objects;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
 @RequiredArgsConstructor
 @Service
@@ -49,6 +51,13 @@ public class FoodServiceImpl implements FoodService {
             throw e;
         }
 
+    }
+
+    @Transactional(readOnly = true)
+    @Override
+    public List<FoodResponseDTO> findAllFoods() {
+        List<Food> foods = foodRepository.findAll();
+        return foods.stream().map(FoodMapper::toResponseDTO).collect(Collectors.toList());
     }
 
     private String uploadFile(MultipartFile file) {

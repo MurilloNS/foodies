@@ -7,12 +7,12 @@ import com.ollirum.foodiesapi.DTO.response.FoodResponseDTO;
 import com.ollirum.foodiesapi.services.FoodService;
 import lombok.AllArgsConstructor;
 import org.springframework.http.HttpStatus;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestPart;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.server.ResponseStatusException;
+
+import java.util.List;
 
 @AllArgsConstructor
 @RestController
@@ -20,8 +20,8 @@ import org.springframework.web.server.ResponseStatusException;
 public class FoodController {
     private final FoodService foodService;
 
-    @PostMapping
-    public FoodResponseDTO addFood(@RequestPart("food") String foodString, @RequestPart("file") MultipartFile file) {
+    @PostMapping(consumes = "multipart/form-data")
+    public ResponseEntity<FoodResponseDTO> addFood(@RequestPart("food") String foodString, @RequestPart("file") MultipartFile file) {
         ObjectMapper objectMapper = new ObjectMapper();
         FoodRequestDTO requestDTO = null;
 
@@ -31,6 +31,14 @@ public class FoodController {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, e.getMessage());
         }
 
-        return foodService.addFood(requestDTO, file);
+        FoodResponseDTO responseDTO = foodService.addFood(requestDTO, file);
+
+        return ResponseEntity.status(HttpStatus.CREATED).body(responseDTO);
+    }
+
+    @GetMapping
+    public ResponseEntity<List<FoodResponseDTO>> findAllFoods() {
+        List<FoodResponseDTO> foods = foodService.findAllFoods();
+        return ResponseEntity.ok(foods);
     }
 }
