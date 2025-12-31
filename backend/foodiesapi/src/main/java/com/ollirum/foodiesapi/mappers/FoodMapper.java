@@ -22,6 +22,7 @@ public class FoodMapper {
         if (food == null) return null;
 
         return FoodResponseDTO.builder()
+                .id(food.getId())
                 .name(food.getName())
                 .description(food.getDescription())
                 .category(food.getCategory())

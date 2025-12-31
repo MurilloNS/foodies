@@ -16,3 +16,23 @@ export const addFood = async (foodData, image) => {
     throw e;
   }
 };
+
+export const getAllFoods = async () => {
+  try {
+    const response = await axios.get(API_URL);
+    return response.data;
+  } catch (e) {
+    console.error("ERROR", e);
+    throw e;
+  }
+};
+
+export const deleteFood = async (foodId) => {
+  try {
+    const response = await axios.delete(API_URL + "/" + foodId);
+    return response.status === 204;
+  } catch (e) {
+    console.error("ERROR", e);
+    throw e;
+  }
+};

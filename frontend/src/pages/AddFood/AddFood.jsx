@@ -21,17 +21,17 @@ const AddFood = () => {
   const onSubmitHandler = async (event) => {
     event.preventDefault();
     if (!image) {
-      toast.error("Please select an image!");
+      toast.error("Please select an image.");
       return;
     }
 
     try {
       await addFood(data, image);
-      toast.success("Food added successfully!");
+      toast.success("Food added successfully.");
       setData({ name: "", description: "", category: "Burgers", price: "" });
       setImage(null);
     } catch (e) {
-      toast.error("Error adding food!");
+      toast.error("Error adding food.");
     }
   };
 
@@ -64,6 +64,7 @@ const AddFood = () => {
                 </label>
                 <input
                   type="text"
+                  placeholder="Chicken burger"
                   className="form-control"
                   id="name"
                   required
@@ -78,6 +79,7 @@ const AddFood = () => {
                 </label>
                 <textarea
                   className="form-control"
+                  placeholder="Write content here..."
                   id="description"
                   rows="5"
                   required
@@ -113,6 +115,7 @@ const AddFood = () => {
                 </label>
                 <input
                   type="number"
+                  placeholder="R$ 200"
                   name="price"
                   id="price"
                   className="form-control"
