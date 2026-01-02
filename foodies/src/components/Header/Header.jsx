@@ -1,4 +1,3 @@
-import React from "react";
 import { Link } from "react-router-dom";
 
 const Header = () => {
@@ -9,7 +8,7 @@ const Header = () => {
         <p className="col-md-8 fs-4">
           Discover the best food and drinks in São Paulo
         </p>
-        <Link to="/explore" className="btn btn-primary btn-lg">
+        <Link to="/explore" className="btn btn-primary">
           Explore
         </Link>
       </div>
