@@ -1,4 +1,3 @@
-import React from "react";
 import "./Menubar.css";
 import { assets } from "../../assets/assets";
 import { Link } from "react-router-dom";
@@ -7,13 +6,15 @@ const Menubar = () => {
   return (
     <nav className="navbar navbar-expand-lg bg-body-tertiary">
       <div className="container">
-        <img
-          src={assets.logo}
-          alt="Logo"
-          className="mx-4"
-          height={48}
-          width={48}
-        />
+        <Link to="/">
+          <img
+            src={assets.logo}
+            alt="Logo"
+            className="mx-4"
+            height={48}
+            width={48}
+          />
+        </Link>
         <button
           className="navbar-toggler"
           type="button"
