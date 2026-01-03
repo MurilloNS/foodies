@@ -11,3 +11,13 @@ export const fetchFoodList = async () => {
     throw e;
   }
 };
+
+export const fetchFoodDetails = async (id) => {
+  try {
+    const response = await axios.get(API_URL + "/" + id);
+    return response.data;
+  } catch (e) {
+    console.error("ERROR", e);
+    throw e;
+  }
+};

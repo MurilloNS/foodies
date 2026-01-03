@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import { useState } from "react";
 import { assets } from "../../assets/assets";
 import { addFood } from "../../services/foodService";
 import { toast } from "react-toastify";
@@ -9,7 +9,7 @@ const AddFood = () => {
     name: "",
     description: "",
     price: "",
-    category: "Burgers",
+    category: "",
   });
 
   const onChangeHandler = (event) => {
@@ -28,7 +28,7 @@ const AddFood = () => {
     try {
       await addFood(data, image);
       toast.success("Food added successfully.");
-      setData({ name: "", description: "", category: "Burgers", price: "" });
+      setData({ name: "", description: "", category: "", price: "" });
       setImage(null);
     } catch (e) {
       toast.error("Error adding food.");
@@ -102,11 +102,11 @@ const AddFood = () => {
                   <option value="">Select a category</option>
                   <option value="Ice Cream">Ice Cream</option>
                   <option value="Salad">Salad</option>
-                  <option value="Burgers">Burgers</option>
+                  <option value="Burger">Burger</option>
                   <option value="Pizza">Pizza</option>
-                  <option value="Drinks">Drinks</option>
-                  <option value="Desserts">Desserts</option>
-                  <option value="Snacks">Snacks</option>
+                  <option value="Drink">Drink</option>
+                  <option value="Dessert">Dessert</option>
+                  <option value="Snack">Snack</option>
                 </select>
               </div>
               <div className="mb-3">
