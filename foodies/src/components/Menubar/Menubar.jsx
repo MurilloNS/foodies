@@ -1,8 +1,16 @@
 import "./Menubar.css";
 import { assets } from "../../assets/assets";
 import { Link } from "react-router-dom";
+import { useContext, useState } from "react";
+import { StoreContext } from "../../context/StoreContext";
 
 const Menubar = () => {
+  const [active, setActive] = useState("home");
+  const { quantities } = useContext(StoreContext);
+  const uniqueItensInCart = Object.values(quantities).filter(
+    (qty) => qty > 0
+  ).length;
+
   return (
     <nav className="navbar navbar-expand-lg bg-body-tertiary">
       <div className="container">
@@ -29,34 +37,54 @@ const Menubar = () => {
         <div className="collapse navbar-collapse" id="navbarSupportedContent">
           <ul className="navbar-nav me-auto mb-2 mb-lg-0">
             <li className="nav-item">
-              <Link className="nav-link" to="/">
+              <Link
+                className={
+                  active === "home" ? "nav-link fw-bold active" : "nav-link"
+                }
+                to="/"
+                onClick={() => setActive("home")}
+              >
                 Home
               </Link>
             </li>
             <li className="nav-item">
-              <Link className="nav-link" to="/explore">
+              <Link
+                className={
+                  active === "explore" ? "nav-link fw-bold active" : "nav-link"
+                }
+                to="/explore"
+                onClick={() => setActive("explore")}
+              >
                 Explore
               </Link>
             </li>
             <li className="nav-item">
-              <Link className="nav-link" to="/contact">
+              <Link
+                className={
+                  active === "contact" ? "nav-link fw-bold active" : "nav-link"
+                }
+                to="/contact"
+                onClick={() => setActive("contact")}
+              >
                 Contact Us
               </Link>
             </li>
           </ul>
           <div className="d-flex align-items-center gap-4">
-            <div className="position-relative">
-              <img
-                src={assets.cart}
-                alt="Cart"
-                height={32}
-                width={32}
-                className="position-relative"
-              />
-              <span className="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-warning">
-                5
-              </span>
-            </div>
+            <Link to={`/cart`}>
+              <div className="position-relative">
+                <img
+                  src={assets.cart}
+                  alt="Cart"
+                  height={32}
+                  width={32}
+                  className="position-relative"
+                />
+                <span className="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-warning">
+                  {uniqueItensInCart}
+                </span>
+              </div>
+            </Link>
             <button className="btn btn-outline-primary">Login</button>
             <button className="btn btn-outline-success">Register</button>
           </div>
