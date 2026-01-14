@@ -6,6 +6,8 @@ import Explore from "./pages/Explore/Explore";
 import FoodDetails from "./pages/FoodDetails/FoodDetails";
 import Cart from "./pages/Cart/Cart";
 import { Order } from "./pages/Order/Order";
+import Login from "./components/Login/Login";
+import Register from "./components/Register/Register";
 
 const App = () => {
   return (
@@ -18,6 +20,8 @@ const App = () => {
         <Route path="/food/:id" element={<FoodDetails />} />
         <Route path="/cart" element={<Cart />} />
         <Route path="/order" element={<Order />} />
+        <Route path="/login" element={<Login />} />
+        <Route path="/register" element={<Register />} />
       </Routes>
     </div>
   );
