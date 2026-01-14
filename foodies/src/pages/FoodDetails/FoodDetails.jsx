@@ -1,12 +1,20 @@
-import { useEffect, useState } from "react";
-import { useParams } from "react-router-dom";
+import { useContext, useEffect, useState } from "react";
+import { useNavigate, useParams } from "react-router-dom";
 import { fetchFoodDetails } from "../../services/foodService";
 import { toast } from "react-toastify";
 import { formatPriceBR } from "../../utils/formatPriceBR";
+import { StoreContext } from "../../context/StoreContext";
 
 const FoodDetails = () => {
   const { id } = useParams();
+  const { increaseQty } = useContext(StoreContext);
+  const navigate = useNavigate();
   const [data, setData] = useState({});
+
+  const addToCart = () => {
+    increaseQty(data.id);
+    navigate("/cart");
+  };
 
   useEffect(() => {
     const loadFoodDetails = async () => {
@@ -46,6 +54,7 @@ const FoodDetails = () => {
               <button
                 className="btn btn-outline-dark flex-shrink-0"
                 type="button"
+                onClick={addToCart}
               >
                 <i className="bi-cart-fill me-1"></i>
                 Add to cart
