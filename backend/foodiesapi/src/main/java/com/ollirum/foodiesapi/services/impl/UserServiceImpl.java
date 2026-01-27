@@ -5,8 +5,10 @@ import com.ollirum.foodiesapi.DTO.response.UserResponseDTO;
 import com.ollirum.foodiesapi.entities.User;
 import com.ollirum.foodiesapi.mappers.UserMapper;
 import com.ollirum.foodiesapi.repositories.UserRepository;
+import com.ollirum.foodiesapi.services.AuthenticationFacade;
 import com.ollirum.foodiesapi.services.UserService;
 import lombok.AllArgsConstructor;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -16,6 +18,7 @@ import org.springframework.transaction.annotation.Transactional;
 public class UserServiceImpl implements UserService {
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
+    private final AuthenticationFacade authenticationFacade;
 
     @Transactional(rollbackFor = Exception.class)
     @Override
@@ -24,5 +27,14 @@ public class UserServiceImpl implements UserService {
         newUser.setPassword(passwordEncoder.encode(newUser.getPassword()));
         newUser = userRepository.save(newUser);
         return UserMapper.toResponseDTO(newUser);
+    }
+
+    @Override
+    public String findByUserId() {
+        String loggedInUserEmail = authenticationFacade.getAuthentication().getName();
+        User loggedInUser = userRepository.findByEmail(loggedInUserEmail)
+                .orElseThrow(() -> new UsernameNotFoundException("User not found."));
+
+        return loggedInUser.getId();
     }
 }
