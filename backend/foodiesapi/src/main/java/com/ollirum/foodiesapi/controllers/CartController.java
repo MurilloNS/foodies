@@ -5,12 +5,7 @@ import com.ollirum.foodiesapi.DTO.response.CartResponseDTO;
 import com.ollirum.foodiesapi.services.CartService;
 import lombok.AllArgsConstructor;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
-
-import java.util.Map;
+import org.springframework.web.bind.annotation.*;
 
 @AllArgsConstructor
 @RestController
@@ -22,5 +17,11 @@ public class CartController {
     public ResponseEntity<CartResponseDTO> addToCart(@RequestBody CartRequestDTO request) {
         CartResponseDTO response = cartService.addToCart(request);
         return ResponseEntity.ok(response);
+    }
+
+    @GetMapping
+    public ResponseEntity<CartResponseDTO> getCart() {
+        CartResponseDTO cart = cartService.getCart();
+        return ResponseEntity.ok(cart);
     }
 }

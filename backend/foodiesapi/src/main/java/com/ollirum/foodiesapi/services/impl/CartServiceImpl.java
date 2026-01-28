@@ -32,4 +32,13 @@ public class CartServiceImpl implements CartService {
 
         return CartMapper.toResponseDTO(cart);
     }
+
+    @Override
+    public CartResponseDTO getCart() {
+        String loggedInUserId = userService.findByUserId();
+        Cart entity = cartRepository.findByUserId(loggedInUserId)
+                .orElse(new Cart(null, loggedInUserId,  new HashMap<>()));
+
+        return CartMapper.toResponseDTO(entity);
+    }
 }

@@ -5,4 +5,5 @@ import com.ollirum.foodiesapi.DTO.response.CartResponseDTO;
 
 public interface CartService {
     CartResponseDTO addToCart(CartRequestDTO request);
+    CartResponseDTO getCart();
 }
