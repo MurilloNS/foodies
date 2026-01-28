@@ -30,4 +30,9 @@ public class CartController {
         cartService.clearCart();
         return ResponseEntity.noContent().build();
     }
+
+    @PostMapping("/remove")
+    public ResponseEntity<CartResponseDTO> removeFromCart(@RequestBody CartRequestDTO request) {
+        return ResponseEntity.ok(cartService.removeFromCart(request));
+    }
 }

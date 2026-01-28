@@ -7,4 +7,5 @@ public interface CartService {
     CartResponseDTO addToCart(CartRequestDTO request);
     CartResponseDTO getCart();
     void clearCart();
+    CartResponseDTO removeFromCart(CartRequestDTO request);
 }
