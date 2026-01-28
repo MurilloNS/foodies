@@ -9,6 +9,7 @@ import com.ollirum.foodiesapi.services.CartService;
 import com.ollirum.foodiesapi.services.UserService;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -21,6 +22,7 @@ public class CartServiceImpl implements CartService {
     private final UserService userService;
 
     @Override
+    @Transactional(rollbackFor = Exception.class)
     public CartResponseDTO addToCart(CartRequestDTO request) {
         String loggedInUserId = userService.findByUserId();
         Optional<Cart> cartOptional = cartRepository.findByUserId(loggedInUserId);
@@ -34,11 +36,19 @@ public class CartServiceImpl implements CartService {
     }
 
     @Override
+    @Transactional(readOnly = true)
     public CartResponseDTO getCart() {
         String loggedInUserId = userService.findByUserId();
         Cart entity = cartRepository.findByUserId(loggedInUserId)
                 .orElse(new Cart(null, loggedInUserId,  new HashMap<>()));
 
         return CartMapper.toResponseDTO(entity);
+    }
+
+    @Override
+    @Transactional(rollbackFor = Exception.class)
+    public void clearCart() {
+        String loggedInUserId = userService.findByUserId();
+        cartRepository.deleteByUserId(loggedInUserId);
     }
 }

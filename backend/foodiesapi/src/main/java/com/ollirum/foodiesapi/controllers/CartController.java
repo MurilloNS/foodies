@@ -24,4 +24,10 @@ public class CartController {
         CartResponseDTO cart = cartService.getCart();
         return ResponseEntity.ok(cart);
     }
+
+    @DeleteMapping
+    public ResponseEntity<Void> clearCart() {
+        cartService.clearCart();
+        return ResponseEntity.noContent().build();
+    }
 }
