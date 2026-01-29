@@ -1,5 +1,7 @@
 import logo from "./logo.png";
 import cart from "./cart.png";
+import profile from "./profile.png";
+
 import burger from "./burger.png";
 import dessert from "./dessert.png";
 import drink from "./drink.png";
@@ -8,7 +10,7 @@ import pizza from "./pizza.png";
 import salad from "./salad.png";
 import snack from "./snack.png";
 
-export const assets = { logo, cart };
+export const assets = { logo, cart, profile };
 
 export const categories = [
   {

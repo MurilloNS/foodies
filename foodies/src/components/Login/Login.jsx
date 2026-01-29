@@ -1,7 +1,37 @@
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import "./Login.css";
+import { useContext, useState } from "react";
+import { toast } from "react-toastify";
+import { login } from "../../services/authService";
+import { StoreContext } from "../../context/StoreContext";
 
 const Login = () => {
+  const { setToken } = useContext(StoreContext);
+  const navigate = useNavigate();
+  const [data, setData] = useState({
+    email: "",
+    password: "",
+  });
+
+  const onChangeHandler = (event) => {
+    const name = event.target.name;
+    const value = event.target.value;
+    setData((data) => ({ ...data, [name]: value }));
+  };
+
+  const onSubmitHandler = async (event) => {
+    event.preventDefault();
+
+    try {
+      const response = await login(data);
+      setToken(response.data.token);
+      localStorage.setItem("token", response.data.token);
+      navigate("/");
+    } catch (e) {
+      toast.error("Unable to login. Please try again.");
+    }
+  };
+
   return (
     <div className="login-container">
       <div className="row">
@@ -11,13 +41,16 @@ const Login = () => {
               <h5 className="card-title text-center mb-5 fw-light fs-5">
                 Sign In
               </h5>
-              <form>
+              <form onSubmit={onSubmitHandler}>
                 <div className="form-floating mb-3">
                   <input
                     type="email"
                     className="form-control"
                     id="floatingInput"
                     placeholder="name@example.com"
+                    name="email"
+                    onChange={onChangeHandler}
+                    value={data.email}
                   />
                   <label htmlFor="floatingInput">Email address</label>
                 </div>
@@ -27,6 +60,9 @@ const Login = () => {
                     className="form-control"
                     id="floatingPassword"
                     placeholder="Password"
+                    name="password"
+                    onChange={onChangeHandler}
+                    value={data.password}
                   />
                   <label htmlFor="floatingPassword">Password</label>
                 </div>
