@@ -34,6 +34,7 @@ public class OrderMapper {
                 .paymentProvider(order.getPaymentProvider())
                 .email(order.getEmail())
                 .phoneNumber(order.getPhoneNumber())
+                .orderedItems(order.getOrderedItems())
                 .build();
     }
 }

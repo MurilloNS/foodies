@@ -16,8 +16,13 @@ import com.stripe.net.Webhook;
 import com.stripe.param.PaymentIntentCreateParams;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+import java.nio.file.AccessDeniedException;
+import java.util.List;
+import java.util.stream.Collectors;
 
 @RequiredArgsConstructor
 @Service
@@ -92,6 +97,44 @@ public class OrderServiceImpl implements OrderService {
                     order.setPaymentStatus("FAILED");
                     orderRepository.save(order);
                 });
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public List<OrderResponseDTO> getUserOrders() {
+        List<Order> list = orderRepository.findByUserId(userService.findByUserId());
+        return list.stream().map(OrderMapper::toResponseDTO).collect(Collectors.toList());
+    }
+
+    @Override
+    @Transactional(rollbackFor = Exception.class)
+    public void removeOrder(String orderId) throws AccessDeniedException {
+        String loggedInUserId = userService.findByUserId();
+        Order order = orderRepository.findById(orderId)
+                        .orElseThrow(() -> new UsernameNotFoundException("Order not found"));
+
+        if (!order.getUserId().equals(loggedInUserId)) {
+            throw new AccessDeniedException("You cannot delete this order");
+        }
+
+        orderRepository.deleteById(orderId);
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public List<OrderResponseDTO> getOrdersOfAllUsers() {
+        List<Order> list = orderRepository.findAll();
+        return list.stream().map(OrderMapper::toResponseDTO).collect(Collectors.toList());
+    }
+
+    @Override
+    @Transactional(rollbackFor = Exception.class)
+    public void updateOrderStatus(String orderId, String status) {
+        Order entity = orderRepository.findById(orderId)
+                .orElseThrow(() -> new UsernameNotFoundException("Order not found"));
+
+        entity.setOrderStatus(status);
+        orderRepository.save(entity);
     }
 
     private void handlePaymentIntentSucceeded(Event event) {

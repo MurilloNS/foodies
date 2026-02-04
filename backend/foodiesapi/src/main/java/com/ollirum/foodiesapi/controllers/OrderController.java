@@ -9,6 +9,8 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.nio.file.AccessDeniedException;
+import java.util.List;
 import java.util.Map;
 
 @CrossOrigin("*")
@@ -28,5 +30,27 @@ public class OrderController {
     public ResponseEntity<String> handleStripeWebhook(@RequestBody String payload, @RequestHeader("Stripe-Signature") String sigHeader) {
         orderService.processStripeWebhook(payload, sigHeader);
         return ResponseEntity.ok("received");
+    }
+
+    @GetMapping
+    public ResponseEntity<List<OrderResponseDTO>> getOrders() {
+        return ResponseEntity.ok(orderService.getUserOrders());
+    }
+
+    @DeleteMapping("/{orderId}")
+    public ResponseEntity<Void> deleteOrder(@PathVariable String orderId) throws AccessDeniedException {
+        orderService.removeOrder(orderId);
+        return ResponseEntity.noContent().build();
+    }
+
+    @GetMapping("/all")
+    public ResponseEntity<List<OrderResponseDTO>> getOrdersOfAllUsers() {
+        return ResponseEntity.ok(orderService.getOrdersOfAllUsers());
+    }
+
+    @PatchMapping("/status/{orderId}")
+    public ResponseEntity<Void> updateOrderStatus(@PathVariable String orderId, @RequestParam String status) {
+        orderService.updateOrderStatus(orderId, status);
+        return ResponseEntity.ok().build();
     }
 }
