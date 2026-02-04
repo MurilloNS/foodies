@@ -35,7 +35,7 @@ public class SecurityConfig {
         http.cors(Customizer.withDefaults())
                 .csrf(AbstractHttpConfigurer::disable)
                 .authorizeHttpRequests(auth ->
-                        auth.requestMatchers("/api/register", "/api/login", "/api/foods/**").permitAll()
+                        auth.requestMatchers("/api/register", "/api/login", "/api/foods/**", "/api/orders/webhook/stripe").permitAll()
                                 .anyRequest().authenticated())
                                 .sessionManagement(session ->
                                         session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))

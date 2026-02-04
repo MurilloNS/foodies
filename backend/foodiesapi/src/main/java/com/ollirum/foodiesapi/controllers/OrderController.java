@@ -9,6 +9,8 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.Map;
+
 @CrossOrigin("*")
 @AllArgsConstructor
 @RequestMapping("/api/orders")
@@ -20,5 +22,11 @@ public class OrderController {
     public ResponseEntity<OrderResponseDTO> createOrderWithPayment(@RequestBody OrderRequestDTO orderRequestDTO) throws StripeException {
         OrderResponseDTO responseDTO = orderService.createOrder(orderRequestDTO);
         return ResponseEntity.status(HttpStatus.CREATED).body(responseDTO);
+    }
+
+    @PostMapping("/webhook/stripe")
+    public ResponseEntity<String> handleStripeWebhook(@RequestBody String payload, @RequestHeader("Stripe-Signature") String sigHeader) {
+        orderService.processStripeWebhook(payload, sigHeader);
+        return ResponseEntity.ok("received");
     }
 }
