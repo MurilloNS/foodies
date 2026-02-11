@@ -25,7 +25,7 @@ public class CartController {
         return ResponseEntity.ok(cart);
     }
 
-    @DeleteMapping
+    @DeleteMapping("/clear")
     public ResponseEntity<Void> clearCart() {
         cartService.clearCart();
         return ResponseEntity.noContent().build();

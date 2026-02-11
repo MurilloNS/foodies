@@ -6,5 +6,5 @@ import lombok.Builder;
 import java.util.List;
 
 @Builder
-public record OrderResponseDTO(String id, String userId, String userAddress, String phoneNumber, String email, double amount, String paymentStatus, String paymentProvider, String paymentIntentId, String orderStatus, List<OrderItem> orderedItems) {
+public record OrderResponseDTO(String id, String userId, String userAddress, String phoneNumber, String email, double amount, String paymentStatus, String paymentProvider, String paymentIntentId, String clientSecret, String orderStatus, List<OrderItem> orderedItems) {
 }

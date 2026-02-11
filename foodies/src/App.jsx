@@ -9,6 +9,8 @@ import { Order } from "./pages/Order/Order";
 import Login from "./components/Login/Login";
 import Register from "./components/Register/Register";
 import { ToastContainer } from "react-toastify";
+import { Elements } from "@stripe/react-stripe-js";
+import { stripePromise } from "./services/stripe";
 
 const App = () => {
   return (
@@ -21,7 +23,14 @@ const App = () => {
         <Route path="/explore" element={<Explore />} />
         <Route path="/food/:id" element={<FoodDetails />} />
         <Route path="/cart" element={<Cart />} />
-        <Route path="/order" element={<Order />} />
+        <Route
+          path="/order"
+          element={
+            <Elements stripe={stripePromise}>
+              <Order />
+            </Elements>
+          }
+        />
         <Route path="/login" element={<Login />} />
         <Route path="/register" element={<Register />} />
       </Routes>

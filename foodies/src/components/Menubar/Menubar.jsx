@@ -10,7 +10,7 @@ const Menubar = () => {
     useContext(StoreContext);
   const navigate = useNavigate();
 
-  const uniqueItensInCart = Object.values(quantities).filter(
+  const uniqueItensInCart = Object.values(quantities || {}).filter(
     (qty) => qty > 0,
   ).length;
 

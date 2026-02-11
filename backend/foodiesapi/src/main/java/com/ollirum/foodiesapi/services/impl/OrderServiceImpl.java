@@ -20,6 +20,7 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.math.BigDecimal;
 import java.nio.file.AccessDeniedException;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -44,8 +45,10 @@ public class OrderServiceImpl implements OrderService {
         newOrder.setUserId(loggedInUserId);
         newOrder = orderRepository.save(newOrder);
 
+        long amountInCents = BigDecimal.valueOf(newOrder.getAmount()).multiply(BigDecimal.valueOf(100)).longValueExact();
+
         PaymentIntentCreateParams params = PaymentIntentCreateParams.builder()
-                .setAmount((long) (newOrder.getAmount() * 100))
+                .setAmount(amountInCents)
                 .setCurrency("brl")
                 .putMetadata("orderId", newOrder.getId())
                 .setReceiptEmail(newOrder.getEmail())
@@ -53,10 +56,9 @@ public class OrderServiceImpl implements OrderService {
 
         PaymentIntent paymentIntent = PaymentIntent.create(params);
         newOrder.setPaymentIntentId(paymentIntent.getId());
-        newOrder.setPaymentStatus(paymentIntent.getStatus());
         newOrder =  orderRepository.save(newOrder);
 
-        return OrderMapper.toResponseDTO(newOrder);
+        return OrderMapper.toResponseDTO(newOrder, paymentIntent.getClientSecret());
     }
 
     @Override

@@ -1,17 +1,125 @@
-import { useContext } from "react";
+import { useContext, useState } from "react";
 import { assets } from "../../assets/assets";
 import "./Order.css";
 import { StoreContext } from "../../context/StoreContext";
 import { formatPriceBR } from "../../utils/formatPriceBR";
 import { calculateCartTotals } from "../../utils/cartUtils";
+import axios from "axios";
+import { toast } from "react-toastify";
+import { useNavigate } from "react-router-dom";
+import { useStripe, useElements, CardElement } from "@stripe/react-stripe-js";
 
 export const Order = () => {
-  const { foodList, quantities, setQuantities } = useContext(StoreContext);
+  const { foodList, quantities, setQuantities, token } =
+    useContext(StoreContext);
+  const navigate = useNavigate();
+  const stripe = useStripe();
+  const elements = useElements();
+
+  const [data, setData] = useState({
+    firstName: "",
+    lastName: "",
+    email: "",
+    phoneNumber: "",
+    address: "",
+    state: "",
+    city: "",
+    cep: "",
+  });
+
+  const onChangeHandler = (event) => {
+    const name = event.target.name;
+    const value = event.target.value;
+    setData((data) => ({ ...data, [name]: value }));
+  };
+
+  const onSubmitHandler = async (event) => {
+    event.preventDefault();
+
+    if (!stripe || !elements) {
+      toast.error("Stripe ainda não carregou");
+      return;
+    }
+
+    const orderData = {
+      userAddress: `${data.firstName} ${data.lastName}, ${data.address}, ${data.city}, ${data.state}, ${data.cep}`,
+      phoneNumber: data.phoneNumber,
+      email: data.email,
+      orderedItems: cartItems.map((item) => ({
+        foodId: item.foodId,
+        quantity: quantities[item.id],
+        price: item.price * quantities[item.id],
+        category: item.category,
+        imageUrl: item.imageUrl,
+        description: item.description,
+        name: item.name,
+      })),
+      amount: total,
+    };
+
+    try {
+      // 1️⃣ cria pedido + payment intent
+      const { data: order } = await axios.post(
+        "http://localhost:8080/api/orders/create",
+        orderData,
+        { headers: { Authorization: `Bearer ${token}` } },
+      );
+
+      // 2️⃣ confirma pagamento
+      const result = await stripe.confirmCardPayment(order.clientSecret, {
+        payment_method: {
+          card: elements.getElement(CardElement),
+          billing_details: {
+            name: `${data.firstName} ${data.lastName}`,
+            email: data.email,
+            phone: data.phoneNumber,
+          },
+        },
+      });
+
+      if (result.error) {
+        toast.error(result.error.message);
+        await deleteOrder(order.id);
+        return;
+      }
+
+      if (result.paymentIntent.status === "succeeded") {
+        toast.success("Pagamento realizado com sucesso!");
+        await clearCart();
+        navigate("/");
+      }
+    } catch (error) {
+      toast.error("Unable to place order. Please try again");
+    }
+  };
+
+  const deleteOrder = async (orderId) => {
+    try {
+      await axios.delete("http://localhost:8080/api/orders/" + orderId, {
+        headers: { Authorization: `Bearer ${token}` },
+      });
+    } catch (error) {
+      toast.error("Something went wrong. Contact support.");
+    }
+  };
+
+  const clearCart = async () => {
+    try {
+      await axios.delete("http://localhost:8080/api/cart/clear", {
+        headers: { Authorization: `Bearer ${token}` },
+      });
+
+      setQuantities({});
+    } catch (error) {
+      toast.error("Error while clearing the cart.");
+    }
+  };
+
   const cartItems = foodList.filter((food) => quantities[food.id] > 0);
 
   const { subtotal, shipping, tax, total } = calculateCartTotals(
     cartItems,
-    quantities
+    quantities,
   );
 
   return (
@@ -72,7 +180,7 @@ export const Order = () => {
           </div>
           <div className="col-md-7 col-lg-8">
             <h4 className="mb-3">Billing address</h4>
-            <form className="needs-validation" novalidate>
+            <form className="needs-validation" onSubmit={onSubmitHandler}>
               <div className="row g-3">
                 <div className="col-sm-6">
                   <label htmlFor="firstName" className="form-label">
@@ -83,8 +191,10 @@ export const Order = () => {
                     className="form-control"
                     id="firstName"
                     placeholder="João"
-                    value=""
                     required
+                    name="firstName"
+                    onChange={onChangeHandler}
+                    value={data.firstName}
                   />
                 </div>
                 <div className="col-sm-6">
@@ -96,8 +206,10 @@ export const Order = () => {
                     className="form-control"
                     id="lastName"
                     placeholder="Santos"
-                    value=""
                     required
+                    name="lastName"
+                    onChange={onChangeHandler}
+                    value={data.lastName}
                   />
                 </div>
                 <div className="col-12">
@@ -112,6 +224,9 @@ export const Order = () => {
                       id="email"
                       placeholder="Email"
                       required
+                      name="email"
+                      onChange={onChangeHandler}
+                      value={data.email}
                     />
                   </div>
                 </div>
@@ -125,6 +240,9 @@ export const Order = () => {
                     id="phone"
                     placeholder="9876543210"
                     required
+                    name="phoneNumber"
+                    onChange={onChangeHandler}
+                    value={data.phoneNumber}
                   />
                 </div>
                 <div className="col-12">
@@ -137,21 +255,38 @@ export const Order = () => {
                     id="address"
                     placeholder="1234 Main St"
                     required
+                    name="address"
+                    onChange={onChangeHandler}
+                    value={data.address}
                   />
                 </div>
                 <div className="col-md-5">
-                  <label htmlFor="country" className="form-label">
-                    Country
-                  </label>
-                  <select className="form-select" id="country" required>
-                    <option value="">Choose...</option> <option>Brasil</option>
-                  </select>
-                </div>
-                <div className="col-md-4">
                   <label htmlFor="state" className="form-label">
                     State
                   </label>
-                  <select className="form-select" id="state" required>
+                  <select
+                    className="form-select"
+                    id="state"
+                    required
+                    name="state"
+                    value={data.state}
+                    onChange={onChangeHandler}
+                  >
+                    <option value="">Choose...</option> <option>SP</option>
+                  </select>
+                </div>
+                <div className="col-md-4">
+                  <label htmlFor="city" className="form-label">
+                    City
+                  </label>
+                  <select
+                    className="form-select"
+                    id="city"
+                    required
+                    name="city"
+                    value={data.city}
+                    onChange={onChangeHandler}
+                  >
                     <option value="">Choose...</option>
                     <option>São Paulo</option>
                   </select>
@@ -166,9 +301,22 @@ export const Order = () => {
                     id="cep"
                     placeholder="11111-111"
                     required
+                    name="cep"
+                    value={data.cep}
+                    onChange={onChangeHandler}
                   />
                 </div>
               </div>
+              <CardElement
+                className="mt-4"
+                options={{
+                  style: {
+                    base: {
+                      fontSize: "16px",
+                    },
+                  },
+                }}
+              />
               <hr className="my-4" />
               <button
                 className="w-100 btn btn-primary btn-lg"

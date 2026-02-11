@@ -37,4 +37,23 @@ public class OrderMapper {
                 .orderedItems(order.getOrderedItems())
                 .build();
     }
+
+    public static OrderResponseDTO toResponseDTO(Order order, String clientSecret) {
+        if (order == null) return null;
+
+        return OrderResponseDTO.builder()
+                .id(order.getId())
+                .amount(order.getAmount())
+                .userAddress(order.getUserAddress())
+                .userId(order.getUserId())
+                .paymentIntentId(order.getPaymentIntentId())
+                .paymentStatus(order.getPaymentStatus())
+                .orderStatus(order.getOrderStatus())
+                .paymentProvider(order.getPaymentProvider())
+                .email(order.getEmail())
+                .phoneNumber(order.getPhoneNumber())
+                .orderedItems(order.getOrderedItems())
+                .clientSecret(clientSecret)
+                .build();
+    }
 }
