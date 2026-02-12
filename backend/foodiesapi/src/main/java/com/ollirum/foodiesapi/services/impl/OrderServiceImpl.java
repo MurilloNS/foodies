@@ -56,6 +56,7 @@ public class OrderServiceImpl implements OrderService {
 
         PaymentIntent paymentIntent = PaymentIntent.create(params);
         newOrder.setPaymentIntentId(paymentIntent.getId());
+        newOrder.setOrderStatus("Preparing");
         newOrder =  orderRepository.save(newOrder);
 
         return OrderMapper.toResponseDTO(newOrder, paymentIntent.getClientSecret());

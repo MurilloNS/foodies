@@ -11,8 +11,13 @@ import Register from "./components/Register/Register";
 import { ToastContainer } from "react-toastify";
 import { Elements } from "@stripe/react-stripe-js";
 import { stripePromise } from "./services/stripe";
+import MyOrders from "./pages/MyOrders/MyOrders";
+import { useContext } from "react";
+import { StoreContext } from "./context/StoreContext";
 
 const App = () => {
+  const { token } = useContext(StoreContext);
+
   return (
     <div>
       <Menubar />
@@ -26,13 +31,18 @@ const App = () => {
         <Route
           path="/order"
           element={
-            <Elements stripe={stripePromise}>
-              <Order />
-            </Elements>
+            token ? (
+              <Elements stripe={stripePromise}>
+                <Order />
+              </Elements>
+            ) : (
+              <Login />
+            )
           }
         />
-        <Route path="/login" element={<Login />} />
-        <Route path="/register" element={<Register />} />
+        <Route path="/login" element={token ? <Home /> : <Login />} />
+        <Route path="/register" element={token ? <Home /> : <Register />} />
+        <Route path="/myorders" element={token ? <MyOrders /> : <Login />} />
       </Routes>
     </div>
   );

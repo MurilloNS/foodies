@@ -86,8 +86,8 @@ const Menubar = () => {
                 <img
                   src={assets.cart}
                   alt="Cart"
-                  height={32}
-                  width={32}
+                  height={28}
+                  width={28}
                   className="position-relative"
                 />
                 <span className="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-warning">
@@ -98,13 +98,13 @@ const Menubar = () => {
             {!token ? (
               <>
                 <button
-                  className="btn btn-outline-primary"
+                  className="btn btn-outline-primary btn-sm"
                   onClick={() => navigate("/login")}
                 >
                   Login
                 </button>
                 <button
-                  className="btn btn-outline-success"
+                  className="btn btn-outline-success btn-sm"
                   onClick={() => navigate("/register")}
                 >
                   Register

@@ -4,10 +4,11 @@ import "./Order.css";
 import { StoreContext } from "../../context/StoreContext";
 import { formatPriceBR } from "../../utils/formatPriceBR";
 import { calculateCartTotals } from "../../utils/cartUtils";
-import axios from "axios";
 import { toast } from "react-toastify";
 import { useNavigate } from "react-router-dom";
 import { useStripe, useElements, CardElement } from "@stripe/react-stripe-js";
+import { createOrder, deleteOrderById } from "../../services/orderService";
+import { clearCart } from "../../services/cartService";
 
 export const Order = () => {
   const { foodList, quantities, setQuantities, token } =
@@ -58,14 +59,8 @@ export const Order = () => {
     };
 
     try {
-      // 1️⃣ cria pedido + payment intent
-      const { data: order } = await axios.post(
-        "http://localhost:8080/api/orders/create",
-        orderData,
-        { headers: { Authorization: `Bearer ${token}` } },
-      );
+      const order = await createOrder(orderData, token);
 
-      // 2️⃣ confirma pagamento
       const result = await stripe.confirmCardPayment(order.clientSecret, {
         payment_method: {
           card: elements.getElement(CardElement),
@@ -79,39 +74,18 @@ export const Order = () => {
 
       if (result.error) {
         toast.error(result.error.message);
-        await deleteOrder(order.id);
+        await deleteOrderById(order.id, token);
         return;
       }
 
       if (result.paymentIntent.status === "succeeded") {
         toast.success("Pagamento realizado com sucesso!");
-        await clearCart();
+        await clearCart(token);
+        setQuantities({});
         navigate("/");
       }
     } catch (error) {
       toast.error("Unable to place order. Please try again");
-    }
-  };
-
-  const deleteOrder = async (orderId) => {
-    try {
-      await axios.delete("http://localhost:8080/api/orders/" + orderId, {
-        headers: { Authorization: `Bearer ${token}` },
-      });
-    } catch (error) {
-      toast.error("Something went wrong. Contact support.");
-    }
-  };
-
-  const clearCart = async () => {
-    try {
-      await axios.delete("http://localhost:8080/api/cart/clear", {
-        headers: { Authorization: `Bearer ${token}` },
-      });
-
-      setQuantities({});
-    } catch (error) {
-      toast.error("Error while clearing the cart.");
     }
   };
 
