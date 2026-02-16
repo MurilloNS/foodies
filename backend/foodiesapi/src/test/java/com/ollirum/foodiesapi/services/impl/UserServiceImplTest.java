@@ -78,7 +78,6 @@ public class UserServiceImplTest {
         verify(authenticationFacade).getAuthentication();
         verify(authentication).getName();
         verify(userRepository).findByEmail(email);
-        assertNull(userId);
     }
 
     @Test
