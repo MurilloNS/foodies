@@ -36,7 +36,7 @@ Checkout para o usuário inserir as informações da entrega e o cartão de cré
 - **Feedback:** Notificações visuais de sucesso (Toasts);
 - **Pedidos:** Possibilidade de ver seus pedidos e situação do pedido.
 
-- ### 🔒 Dashboard
+### 🔒 Dashboard
 - **Pedidos:** Possibilidade ver todos os pedidos feitos e a situação deles;
 - **Listagem de produtos:** Visualização de todos os produtos cadastrados, e a possibilidade de edição deles;
 - **Criação de produtos:** Criação de produtos para ser entregues, aparecendo para os clientes após a sua criação.
